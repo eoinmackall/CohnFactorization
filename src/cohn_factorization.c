@@ -5,6 +5,9 @@
 # include <omp.h>
 # include "flint/flint.h"
 # include "flint/ulong_extras.h"
+# include "flint/fmpz_poly.h"
+# include "flint/fmpz_poly_factor.h"
+
 
 volatile sig_atomic_t keep_running = true;
 
@@ -128,7 +131,6 @@ int main(int argc, char *argv[]) {
         }
     
         // Cleanup
-        n_factor_clear(&factors);
         fmpz_poly_clear(poly);
         fmpz_poly_factor_clear(poly_fac);
 

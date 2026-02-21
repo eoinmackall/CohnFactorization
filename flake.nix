@@ -12,6 +12,8 @@
       buildInputs = with pkgs; [
         gcc 
         flint
+        gmp
+        mpfr
       ];
     };
   };
