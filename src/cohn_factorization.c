@@ -124,8 +124,13 @@ int main(int argc, char *argv[]) {
             
             data[i - 2].integer = i;
             data[i - 2].divisors = divisors_counter;
-            data[i - 2].poly_divisors = count_poly_divisors(poly, poly_fac, i);
             
+            if (divisors_counter == 2) {
+                data[i - 2].poly_divisors = 0;
+            } else {
+                data[i - 2].poly_divisors = count_poly_divisors(poly, poly_fac, i);
+            }
+
             #pragma omp atomic
             items_processed++;
         }
