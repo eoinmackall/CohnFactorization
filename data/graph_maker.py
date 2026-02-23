@@ -27,12 +27,15 @@ num_semiprimes = len(semiprimes)
 
 # Integers vs divisors
 plt.scatter(data['num'], data['divisors'])
+plt.show()
 
 # Integers vs poly_divisors
 plt.scatter(data['num'], data['poly_divisors'])
+plt.show()
 
 # Semi-primes vs poly_divisors
 plt.scatter(semiprimes, poly_div_for_semis)
+plt.show()
 
 # ?(p-q)/n vs poly_divisors
 # Have to write a function to find log(|p-q|)
