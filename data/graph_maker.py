@@ -8,6 +8,11 @@ import matplotlib.pyplot as plt
 #####################################
 
 def sieve():
+    # Idea: filter through semi-primes, constructing a sieve.
+    # For each semiprime, check if it factors among the primes in
+    # the sieve; if not, start checking the next multiples of 2...
+    # Only need to check up to 6481 since data is only 42,000,000
+
     return
 
 
@@ -34,7 +39,7 @@ poly_div_for_semis = data['poly_divisors'][is_semiprime]
 
 ###### Random samples #######
 full_sample_size = 1000000
-semi_prime_sample_size = 10000
+semi_prime_sample_size = 100000
 random_indices_full = np.random.choice(len(data['num']), size = full_sample_size, replace = False)
 random_indices_semiprimes = np.random.choice(len(semiprimes), size = semi_prime_sample_size, replace = False)
 
@@ -70,7 +75,7 @@ num_semiprimes = len(semiprimes)
 # Integers vs divisors
 plt.xlim(0, max_full)
 plt.ylim(0, hundred_ceil_full)
-plt.title(fr"{full_sample_size} integers $n < {len(data['num'])}$ vs $\tau(n)$")
+plt.title(fr"{full_sample_size:,} integers $n$ with $2\leq n \leq {len(data['num'])+1:,}$ vs $\tau(n)$")
 plt.scatter(data['num'][random_indices_full], data['divisors'][random_indices_full],
             marker=".", color="xkcd:blood")
 plt.show()
@@ -78,7 +83,7 @@ plt.show()
 # Integers vs poly_divisors
 plt.xlim(0, max_full)
 plt.ylim(0, hundred_ceil_full)
-plt.title(fr"{full_sample_size} integers $n < {len(data['num'])}$ vs $\tau_{{\beta,2}}(n)$")
+plt.title(fr"{full_sample_size:,} integers $n$ with $2 \leq n \leq {len(data['num'])+1:,}$ vs $\tau_{{\beta,2}}(n)$")
 plt.scatter(data['num'][random_indices_full], data['poly_divisors'][random_indices_full],
             marker=".", color="xkcd:blood")
 plt.show()
@@ -86,7 +91,7 @@ plt.show()
 # Semi-primes vs poly_divisors
 plt.xlim(0, max_sp)
 plt.ylim(0, hundred_ceil_sp)
-plt.title(fr"{semi_prime_sample_size} semiprimes  $n < {len(data['num'])}$ vs $\tau_{{\beta,2}}(n)$")
+plt.title(fr"{semi_prime_sample_size:,} semiprimes $n$ with $2\leq n \leq {len(data['num'])+1:,}$ vs $\tau_{{\beta,2}}(n)$")
 plt.scatter(semiprimes[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes],
             marker=".", color = "xkcd:blood")
 plt.show()
@@ -100,20 +105,26 @@ log_sp = np.log(semiprimes)
 ####### Cumulative Averages #########
 
 # Cumulative avg. for 'Integers vs poly_divisors'
-
 cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(1, len(data['poly_divisors'])+1)
-print("Last 5 X values:", data['num'][-5:])
 plt.xlim(0, len(data['num']))
-plt.ylim(0, max_tb)
-plt.title(fr"Cumulative average of $\tau_{{\beta,2}}(n)$ for $n < {len(data['num'])}")
-plt.plot(data['num'], cumulative_avg)
+plt.ylim(0, max_tb//4)
+plt.title(fr"Cumulative average of $\tau_{{\beta,2}}(n)$ for all $2\leq n \leq {len(data['num'])+1}$")
+plt.plot(data['num'], cumulative_avg, color='xkcd:blood')
 plt.show()
 
 # Log-log-plot of avg.'s 'Integers vs poly_divisors'
-log_num = np.log(data['num'])
-log_poly_divs = np.log(data['poly_divisors'])
-plt.xlim(0, np.log(len(data['num'])))
-plt.ylim(0, np.log(max_tb))
+log_num = np.log(data['num'][4:])
+log_poly_divs_avg = np.log(cumulative_avg[4:])
+plt.xlim(1, np.ceil(np.log(len(data['num'])-2)))
+plt.ylim(-1.3, np.log(max_tb))
 plt.title(fr"Cumulative average of $\tau_{{\beta,2}}$ with logarithmic axes")
-plt.plot(log_num, log_poly_divs)
+
+m, c = np.polyfit(log_num, log_poly_divs_avg, 1)
+best_fit_line = m * log_num + c
+
+plt.plot(log_num, best_fit_line, color='xkcd:blood', linestyle='--', 
+         label=f'Best Fit: $y = ({m:.4f})x + ({c:.4f})$')
+
+plt.plot(log_num, log_poly_divs_avg)
+plt.legend()
 plt.show()
