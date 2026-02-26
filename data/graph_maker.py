@@ -8,6 +8,7 @@ data_collection = np.dtype([
 ])
 
 data = np.fromfile('data.bin', dtype=data_collection)
+data = data[data['num'] != 0]
 
 is_semiprime = (data['divisors'] == 4)
 
@@ -15,9 +16,27 @@ semiprimes = data['num'][is_semiprime]
 poly_div_for_semis = data['poly_divisors'][is_semiprime]
 
 ###### Random samples #######
-sample_size = 10000
-random_indices_full = np.random.choice(len(data['num']), size = sample_size, replace = False)
-random_indices_semiprimes = np.random.choice(len(semiprimes), size = sample_size, replace = False)
+full_sample_size = 1000000
+semi_prime_sample_size = 10000
+random_indices_full = np.random.choice(len(data['num']), size = full_sample_size, replace = False)
+random_indices_semiprimes = np.random.choice(len(semiprimes), size = semi_prime_sample_size, replace = False)
+
+max_full = np.max(data['num'][random_indices_full])
+max_sp = np.max(semiprimes[random_indices_semiprimes])
+max_tb = np.max(data['poly_divisors'][random_indices_full])
+max_sp_tb = np.max(poly_div_for_semis[random_indices_semiprimes])
+
+temp = max_tb
+hundred_ceil_full = 0
+while temp > 0:
+    hundred_ceil_full += 100
+    temp -= 100
+
+temp = max_sp_tb
+hundred_ceil_sp = 0
+while temp > 0:
+    hundred_ceil_sp += 100
+    temp -= 100
 
 #####################################
 #
@@ -31,16 +50,27 @@ num_semiprimes = len(semiprimes)
 ####### Scatter plots #########
 
 # Integers vs divisors
-plt.scatter(data['num'][random_indices_full], data['divisors'][random_indices_full])
+plt.xlim(0, max_full)
+plt.ylim(0, hundred_ceil_full)
+plt.title(fr"{full_sample_size} integers $n < {len(data['num'])}$ vs $\tau(n)$")
+plt.scatter(data['num'][random_indices_full], data['divisors'][random_indices_full],
+            marker=".", color="xkcd:blood")
 plt.show()
 
 # Integers vs poly_divisors
-plt.scatter(data['num'][random_indices_full], data['poly_divisors'][random_indices_full])
+plt.xlim(0, max_full)
+plt.ylim(0, hundred_ceil_full)
+plt.title(fr"{full_sample_size} integers $n < {len(data['num'])}$ vs $\tau_{{\beta,2}}(n)$")
+plt.scatter(data['num'][random_indices_full], data['poly_divisors'][random_indices_full],
+            marker=".", color="xkcd:blood")
 plt.show()
 
 # Semi-primes vs poly_divisors
-plt.scatter(semiprimes[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes])
-plt.title(f"Semiprimes {len(semiprimes)}")
+plt.xlim(0, max_sp)
+plt.ylim(0, hundred_ceil_sp)
+plt.title(fr"{semi_prime_sample_size} semiprimes  $n < {len(data['num'])}$ vs $\tau_{{\beta,2}}(n)$")
+plt.scatter(semiprimes[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes],
+            marker=".", color = "xkcd:blood")
 plt.show()
 
 # ?(p-q)/n vs poly_divisors
@@ -50,6 +80,9 @@ log_poly_divs = np.log(poly_div_for_semis)
 ####### Cumulative Averages #########
 
 # Cumulative avg. for 'Integers vs poly_divisors'
-
+cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(1, len(data['poly_divisors'])+1)
+print("Last 5 X values:", data['num'][-5:])
+plt.plot(data['num'], cumulative_avg)
+plt.show()
 # Log-plot of avg.'s 'Integers vs poly_divisors'
 
