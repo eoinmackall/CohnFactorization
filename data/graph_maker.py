@@ -1,6 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+#####################################
+#
+# Auxillary functions
+#
+#####################################
+
+def sieve():
+    return
+
+
+
+#####################################
+#
+# Data set-up
+#
+#####################################
+
 data_collection = np.dtype([
     ('num', 'i4'),
     ('divisors', 'i4'),
@@ -26,6 +43,7 @@ max_sp = np.max(semiprimes[random_indices_semiprimes])
 max_tb = np.max(data['poly_divisors'][random_indices_full])
 max_sp_tb = np.max(poly_div_for_semis[random_indices_semiprimes])
 
+# Variables for plot limits
 temp = max_tb
 hundred_ceil_full = 0
 while temp > 0:
@@ -75,14 +93,27 @@ plt.show()
 
 # ?(p-q)/n vs poly_divisors
 # Have to write a function to find log(|p-q|)
-log_poly_divs = np.log(poly_div_for_semis)
+log_poly_divs_sp = np.log(poly_div_for_semis)
+log_sp = np.log(semiprimes)
+
 
 ####### Cumulative Averages #########
 
 # Cumulative avg. for 'Integers vs poly_divisors'
+
 cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(1, len(data['poly_divisors'])+1)
 print("Last 5 X values:", data['num'][-5:])
+plt.xlim(0, len(data['num']))
+plt.ylim(0, max_tb)
+plt.title(fr"Cumulative average of $\tau_{{\beta,2}}(n)$ for $n < {len(data['num'])}")
 plt.plot(data['num'], cumulative_avg)
 plt.show()
-# Log-plot of avg.'s 'Integers vs poly_divisors'
 
+# Log-log-plot of avg.'s 'Integers vs poly_divisors'
+log_num = np.log(data['num'])
+log_poly_divs = np.log(data['poly_divisors'])
+plt.xlim(0, np.log(len(data['num'])))
+plt.ylim(0, np.log(max_tb))
+plt.title(fr"Cumulative average of $\tau_{{\beta,2}}$ with logarithmic axes")
+plt.plot(log_num, log_poly_divs)
+plt.show()
