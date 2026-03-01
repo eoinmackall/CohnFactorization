@@ -7,14 +7,35 @@ import matplotlib.pyplot as plt
 #
 #####################################
 
-def sieve():
-    # Idea: filter through semi-primes, constructing a sieve.
-    # For each semiprime, check if it factors among the primes in
-    # the sieve; if not, start checking the next multiples of 2...
-    # Only need to check up to 6481 since data is only 42,000,000
 
-    return
+def lowest_prime_factor_array(n, semiprimes):
+    
+    # Setting-up the sieve
+    max_val = Int(n**0.5) +1
+    sieve = np.ones(limit, dtype=bool)
+    
+    sieve[:2] = False
+    for i in range(2, int(max_val**0.5) + 1):
+        if sieve[i]:
+            sieve[i*i::i] = False
+    
+    primes = np.nonzero(sieve)[0]
 
+    # Finding the smallest factor
+    unfactored_idx = np.arange(len(semiprimes))
+    p_factors = np.zeros_like(semiprimes)    
+    
+    for p in primes:
+        if len(unfactored_idx) == 0:
+            break  
+
+        divisible = (semiprimes[unfactored_idx] % p == 0)
+        factored = unfactored_idx[divisible]
+        p_factors[factored] = p
+
+        unfactored_idx = unfactored_idx[~divisible]
+
+    return p_factors
 
 
 #####################################
@@ -22,6 +43,7 @@ def sieve():
 # Data set-up
 #
 #####################################
+
 
 data_collection = np.dtype([
     ('num', 'i4'),
@@ -61,11 +83,13 @@ while temp > 0:
     hundred_ceil_sp += 100
     temp -= 100
 
+
 #####################################
 #
 # graphs below
 #
 #####################################
+
 
 num_tests = len(data['num'])
 num_semiprimes = len(semiprimes)
@@ -96,11 +120,19 @@ plt.scatter(semiprimes[random_indices_semiprimes], poly_div_for_semis[random_ind
             marker=".", color = "xkcd:blood")
 plt.show()
 
-# ?(p-q)/n vs poly_divisors
-# Have to write a function to find log(|p-q|)
-log_poly_divs_sp = np.log(poly_div_for_semis)
-log_sp = np.log(semiprimes)
+# log(p-q)/log(pq) vs poly_divisors
+p_factors = lowest_prime_factor_array(semiprimes)
+q_factors = semiprimes[//p_factors
 
+num = np.log(q_factors-p_factors)
+denom = np.log(semiprimes)
+
+ratio = num/denom
+
+plt.xlim(0,1)
+plt.title(fr"$\log(|p-q|)/\log(pq)$ for {semi_prime_sample_size} semiprimes $n=pq$ with $6\leq n \leq {len(data['num'])}")
+plt.scatter(ratio[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes])
+plt.show()
 
 ####### Cumulative Averages #########
 
