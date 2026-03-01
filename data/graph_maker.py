@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 def lowest_prime_factor_array(n, semiprimes):
     
     # Setting-up the sieve
-    max_val = Int(n**0.5) +1
-    sieve = np.ones(limit, dtype=bool)
+    max_val = int(n**0.5) +1
+    sieve = np.ones(max_val, dtype=bool)
     
     sieve[:2] = False
     for i in range(2, int(max_val**0.5) + 1):
@@ -70,7 +70,7 @@ max_sp = np.max(semiprimes[random_indices_semiprimes])
 max_tb = np.max(data['poly_divisors'][random_indices_full])
 max_sp_tb = np.max(poly_div_for_semis[random_indices_semiprimes])
 
-# Variables for plot limits
+# Variables for plot y-axis limits
 temp = max_tb
 hundred_ceil_full = 0
 while temp > 0:
@@ -102,6 +102,7 @@ plt.ylim(0, hundred_ceil_full)
 plt.title(fr"{full_sample_size:,} integers $n$ with $2\leq n \leq {len(data['num'])+1:,}$ vs $\tau(n)$")
 plt.scatter(data['num'][random_indices_full], data['divisors'][random_indices_full],
             marker=".", color="xkcd:blood")
+plt.grid(True, zorder=0)
 plt.show()
 
 # Integers vs poly_divisors
@@ -110,6 +111,7 @@ plt.ylim(0, hundred_ceil_full)
 plt.title(fr"{full_sample_size:,} integers $n$ with $2 \leq n \leq {len(data['num'])+1:,}$ vs $\tau_{{\beta,2}}(n)$")
 plt.scatter(data['num'][random_indices_full], data['poly_divisors'][random_indices_full],
             marker=".", color="xkcd:blood")
+plt.grid(True, zorder=0)
 plt.show()
 
 # Semi-primes vs poly_divisors
@@ -118,11 +120,12 @@ plt.ylim(0, hundred_ceil_sp)
 plt.title(fr"{semi_prime_sample_size:,} semiprimes $n$ with $2\leq n \leq {len(data['num'])+1:,}$ vs $\tau_{{\beta,2}}(n)$")
 plt.scatter(semiprimes[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes],
             marker=".", color = "xkcd:blood")
+plt.grid(True, zorder=0)
 plt.show()
 
 # log(p-q)/log(pq) vs poly_divisors
-p_factors = lowest_prime_factor_array(semiprimes)
-q_factors = semiprimes[//p_factors
+p_factors = lowest_prime_factor_array(len(data['num']),semiprimes)
+q_factors = semiprimes//p_factors
 
 num = np.log(q_factors-p_factors)
 denom = np.log(semiprimes)
@@ -130,8 +133,10 @@ denom = np.log(semiprimes)
 ratio = num/denom
 
 plt.xlim(0,1)
-plt.title(fr"$\log(|p-q|)/\log(pq)$ for {semi_prime_sample_size} semiprimes $n=pq$ with $6\leq n \leq {len(data['num'])}")
-plt.scatter(ratio[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes])
+plt.title(fr"$\log(|p-q|)/\log(pq)$ for {semi_prime_sample_size} semiprimes $n=pq$ with $6\leq n \leq {len(data['num'])+1:,}$")
+plt.scatter(ratio[random_indices_semiprimes], poly_div_for_semis[random_indices_semiprimes],
+            marker=".", color="xkcd:blood")
+plt.grid(True, zorder=0)
 plt.show()
 
 ####### Cumulative Averages #########
@@ -140,8 +145,19 @@ plt.show()
 cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(1, len(data['poly_divisors'])+1)
 plt.xlim(0, len(data['num']))
 plt.ylim(0, max_tb//4)
-plt.title(fr"Cumulative average of $\tau_{{\beta,2}}(n)$ for all $2\leq n \leq {len(data['num'])+1}$")
+plt.title(fr"Cumulative average of $\tau_{{\beta,2}}(n)$ for all $2\leq n \leq {len(data['num'])+1:,}$")
 plt.plot(data['num'], cumulative_avg, color='xkcd:blood')
+plt.show()
+
+# Cumulative avg. for 'Integers vs poly_divisors' with 'Integers vs poly_divisors'
+cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(1, len(data['poly_divisors'])+1)
+plt.xlim(0, max_full)
+plt.ylim(0, hundred_ceil_full)
+plt.title(fr"Cumulative average of $\tau_{{\beta,2}}(n)$ for all $2\leq n \leq {len(data['num'])+1:,}$")
+plt.scatter(data['num'][random_indices_full], data['poly_divisors'][random_indices_full],
+            marker=".", color="xkcd:blood")
+plt.plot(data['num'], cumulative_avg, color='xkcd:charcoal', label=r"Cumulative Avg. of $\tau_{\beta,2}(n)$")
+plt.legend()
 plt.show()
 
 # Log-log-plot of avg.'s 'Integers vs poly_divisors'
@@ -149,7 +165,7 @@ log_num = np.log(data['num'][4:])
 log_poly_divs_avg = np.log(cumulative_avg[4:])
 plt.xlim(1, np.ceil(np.log(len(data['num'])-2)))
 plt.ylim(-1.3, np.log(max_tb))
-plt.title(fr"Cumulative average of $\tau_{{\beta,2}}$ with logarithmic axes")
+plt.title(r"Cumulative average of $\tau_{\beta,2}(n)$ with logarithmic axes")
 
 m, c = np.polyfit(log_num, log_poly_divs_avg, 1)
 best_fit_line = m * log_num + c
@@ -157,6 +173,8 @@ best_fit_line = m * log_num + c
 plt.plot(log_num, best_fit_line, color='xkcd:blood', linestyle='--', 
          label=f'Best Fit: $y = ({m:.4f})x + ({c:.4f})$')
 
-plt.plot(log_num, log_poly_divs_avg)
+plt.plot(log_num, log_poly_divs_avg, color="xkcd:charcoal")
+plt.grid(True, zorder=0)
+plt.axhline(y=0, color="black", linewidth=1)
 plt.legend()
 plt.show()
