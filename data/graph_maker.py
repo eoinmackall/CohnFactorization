@@ -152,7 +152,7 @@ plt.show()
 # plt.show()
 
 # Cumulative avg. for 'Integers vs poly_divisors' with 'Integers vs poly_divisors'
-cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(1, len(data['poly_divisors'])+1)
+cumulative_avg = np.cumsum(data['poly_divisors']) / np.arange(2, len(data['poly_divisors'])+2)
 plt.xlim(0, max_full)
 plt.ylim(0, hundred_ceil_full)
 plt.xlabel("n")
@@ -177,7 +177,7 @@ m, c = np.polyfit(log_num, log_poly_divs_avg, 1)
 best_fit_line = m * log_num + c
 
 plt.plot(log_num, best_fit_line, color='xkcd:blood', linestyle='--', 
-         label=f'Best Fit: $y = ({m:.4f})x + ({c:.4f})$')
+         label=f'Least Squares Regression: $y = {m:.4f}x + ({c:.4f})$')
 
 plt.plot(log_num, log_poly_divs_avg, color="xkcd:charcoal")
 plt.grid(True, zorder=0)
